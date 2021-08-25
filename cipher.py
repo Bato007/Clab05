@@ -8,14 +8,20 @@ from Crypto.Random import get_random_bytes
 MODO CBC
 -> Key 16 - La llave de 16 bits
 -> txtToCipher - El nombre del archivo de texto a encriptar
--> txtToReturn - El nombre del archivo de texto que se returna
+-> txtToReturn - El nombre del archivo de texto que se retorna
 '''
-def AEScipher(key16, txtToCipher, txtToReturn):
-    cipher = AES.new(key16, AES.MODE_CBC)
-    iv = b64encode(cipher.iv).decode('utf-8')
 
+def encrypter(key16, txtToCipher, txtToReturn, mode='CBC'):
+
+    if mode == 'CBC':
+        cipher = AES.new(key16, AES.MODE_CBC)
+    elif mode == 'CFB':
+        cipher = AES.new(key16, AES.MODE_CFB) # Establece el modo de encripcion
+    elif mode == 'OPENPGP':
+        cipher = AES.new(key16, AES.MODE_OPENPGP)
+
+    iv = b64encode(cipher.iv).decode('utf-8')
     cipherTxt = open(txtToReturn,"w+")
-    
     with open(txtToCipher) as a:
         for line in a:
             line = bytes(line, 'utf-8')
@@ -30,4 +36,6 @@ def AEScipher(key16, txtToCipher, txtToReturn):
 
 key = get_random_bytes(16)
 
-print('IV ', AEScipher(key, 'prueba.txt', 'prueba.enc'))
+print('IV ', encrypter(key, 'prueba.txt', 'prueba.enc'))
+print('IV ', encrypter(key, 'prueba.txt', 'prueba1.enc'))
+print('IV ', encrypter(key, 'prueba.txt', 'prueba2.enc'))
