@@ -10,7 +10,6 @@ MODO CBC
 -> txtToCipher - El nombre del archivo de texto a encriptar
 -> txtToReturn - El nombre del archivo de texto que se retorna
 '''
-<<<<<<< HEAD
 
 def encrypter(key16, txtToCipher, txtToReturn, mode='CBC'):
 
@@ -21,10 +20,8 @@ def encrypter(key16, txtToCipher, txtToReturn, mode='CBC'):
     elif mode == 'OPENPGP':
         cipher = AES.new(key16, AES.MODE_OPENPGP)
 
-=======
 def AEScipher(key16, txtToCipher, txtToReturn):
     cipher = AES.new(key16, AES.MODE_CBC)
->>>>>>> 5d27dc195fd9706689370cb6fb3f29c9a02399be
     iv = b64encode(cipher.iv).decode('utf-8')
     cipherTxt = open(txtToReturn,"w+")
     with open(txtToCipher) as a:
@@ -64,11 +61,9 @@ def main():
     striv, iv =  AEScipher(key, txt, enctxt)
     AESdecrypt(key, enctxt, dectxt, iv)
 
-<<<<<<< HEAD
-print('IV ', encrypter(key, 'prueba.txt', 'prueba.enc'))
-print('IV ', encrypter(key, 'prueba.txt', 'prueba1.enc'))
-print('IV ', encrypter(key, 'prueba.txt', 'prueba2.enc'))
-=======
+    print('IV ', encrypter(key, 'prueba.txt', 'prueba.enc'))
+    print('IV ', encrypter(key, 'prueba.txt', 'prueba1.enc'))
+    print('IV ', encrypter(key, 'prueba.txt', 'prueba2.enc'))
+
 if __name__ == '__main__':
     main()
->>>>>>> 5d27dc195fd9706689370cb6fb3f29c9a02399be
