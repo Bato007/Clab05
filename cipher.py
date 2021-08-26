@@ -11,17 +11,25 @@ MODO CBC
 -> txtToReturn - El nombre del archivo de texto que se retorna
 '''
 
-def encrypter(key16, txtToCipher, txtToReturn, mode='CBC'):
+def cipherMode(key16, mode, iv = None):
 
     if mode == 'CBC':
-        cipher = AES.new(key16, AES.MODE_CBC)
+        cipher = AES.new(key16, AES.MODE_CBC, iv)
     elif mode == 'CFB':
-        cipher = AES.new(key16, AES.MODE_CFB) # Establece el modo de encripcion
+        cipher = AES.new(key16, AES.MODE_CFB, iv) # Establece el modo de encripcion
     elif mode == 'OPENPGP':
-        cipher = AES.new(key16, AES.MODE_OPENPGP)
+        cipher = AES.new(key16, AES.MODE_OPENPGP, iv)
+    elif mode == 'ECB':
+        cipher = AES.new(key16, AES.ECB, iv)
+    elif mode == 'OFB':
+        cipher = AES.new(key16, AES.OFB, iv)
+    elif mode == 'CTR':
+        cipher = AES.new(key16, AES.CTR, iv)
 
-def AEScipher(key16, txtToCipher, txtToReturn):
-    cipher = AES.new(key16, AES.MODE_CBC)
+    return cipher
+
+def AEScipher(key16, txtToCipher, txtToReturn, mode):
+    cipher = cipherMode(key16, mode)
     iv = b64encode(cipher.iv).decode('utf-8')
     cipherTxt = open(txtToReturn,"w+")
     with open(txtToCipher) as a:
@@ -36,8 +44,8 @@ def AEScipher(key16, txtToCipher, txtToReturn):
 
     return str(iv), cipher.iv
 
-def AESdecrypt(key16, cipherTxt, returnTxt, iv):
-    cipher = AES.new(key16, AES.MODE_CBC, iv)
+def AESdecrypt(key16, cipherTxt, returnTxt, iv, mode):
+    cipher = cipherMode(key16, mode, iv)
     decryptedTxt = open(returnTxt, 'w+')
 
     # Ahora se obtiene el texto
@@ -57,13 +65,11 @@ def main():
     enctxt = 'prueba.enc'
     dectxt = 'prueba.dec'
     key = get_random_bytes(16)
+    mode = 'CFB'
 
-    striv, iv =  AEScipher(key, txt, enctxt)
-    AESdecrypt(key, enctxt, dectxt, iv)
+    striv, iv =  AEScipher(key, txt, enctxt, mode)
+    AESdecrypt(key, enctxt, dectxt, iv, mode)
 
-    print('IV ', encrypter(key, 'prueba.txt', 'prueba.enc'))
-    print('IV ', encrypter(key, 'prueba.txt', 'prueba1.enc'))
-    print('IV ', encrypter(key, 'prueba.txt', 'prueba2.enc'))
 
 if __name__ == '__main__':
     main()
