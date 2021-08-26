@@ -25,7 +25,9 @@ def cipherMode(key16, mode, iv = None):
         cipher = AES.new(key16, AES.OFB, iv)
     elif mode == 'CTR':
         cipher = AES.new(key16, AES.CTR, iv)
-
+    else:
+        cipher = AES.new(key16, AES.MODE_CBC, iv)
+        
     return cipher
 
 def AEScipher(key16, txtToCipher, txtToReturn, mode):
@@ -65,7 +67,7 @@ def main():
     enctxt = 'prueba.enc'
     dectxt = 'prueba.dec'
     key = get_random_bytes(16)
-    mode = 'CFB'
+    mode = 'CBC'
 
     striv, iv =  AEScipher(key, txt, enctxt, mode)
     AESdecrypt(key, enctxt, dectxt, iv, mode)
