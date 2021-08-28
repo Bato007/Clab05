@@ -11,6 +11,15 @@ MODO CBC
 -> txtToReturn - El nombre del archivo de texto que se retorna
 '''
 
+def bitChainTest(key16):
+    aes = AES.new(key16, AES.MODE_CBC, iv=None)
+    vect = b64encode(aes.iv).decode('utf-8')
+    bitChain = bytes('HolaMundo', 'utf-8')
+    encd = aes.encrypt(pad(bitChain, AES.block_size))
+    final = b64encode(encd).decode('utf-8')
+    print(final)
+
+
 def cipherMode(key16, mode, iv = None):
 
     if mode == 'CBC':
@@ -25,7 +34,7 @@ def cipherMode(key16, mode, iv = None):
         cipher = AES.new(key16, AES.OFB, iv)
     elif mode == 'CTR':
         cipher = AES.new(key16, AES.CTR, iv)
-    else:
+    else: # Si se ingresa un modo inadecuado, lo ejecuta con CBC
         cipher = AES.new(key16, AES.MODE_CBC, iv)
         
     return cipher
@@ -71,6 +80,7 @@ def main():
 
     striv, iv =  AEScipher(key, txt, enctxt, mode)
     AESdecrypt(key, enctxt, dectxt, iv, mode)
+    bitChainTest(key)
 
 
 if __name__ == '__main__':
