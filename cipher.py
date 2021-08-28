@@ -11,32 +11,38 @@ MODO CBC
 -> txtToReturn - El nombre del archivo de texto que se retorna
 '''
 
-def bitChainTest(key16):
-    aes = AES.new(key16, AES.MODE_CBC, iv=None)
-    vect = b64encode(aes.iv).decode('utf-8')
-    bitChain = bytes('HolaMundo', 'utf-8')
-    encd = aes.encrypt(pad(bitChain, AES.block_size))
-    final = b64encode(encd).decode('utf-8')
-    print(final)
+def bitChainTest(key16, chain, mode):
+    result = ''
+    # Encrypting Routine
+    encAES = cipherMode(key16, mode)
+    bitChain = bytes(chain, 'utf-8')
+    enc = encAES.encrypt(pad(bitChain, AES.block_size))
+    encMssg = b64encode(enc).decode('utf-8')
+    # Decrypting Routine
+    decAES = cipherMode(key16, mode, encAES.iv)
+    hexChain = b64decode(encMssg)
+    dec = unpad(decAES.decrypt(hexChain), AES.block_size)
+    decMssg = dec.decode()
 
+    result += '\n' + str(mode) + ' ENCRYPTING-DECRYPTING ROUTINE\n'
+    result += '------------------------------------------\n'
+    result += 'Original Message ---> '+ str(chain) + '\n'
+    result += 'Encrypted Message --> '+ str(encMssg)  + '\n'
+    result += 'Decrypted Message --> '+ str(decMssg) + '\n'
 
-def cipherMode(key16, mode, iv = None):
+    return result 
+  
+def cipherMode(key16, mode, iv = None): # Allows the use of some modes
 
-    if mode == 'CBC':
+    if mode == 'CBC': # supports IV
         cipher = AES.new(key16, AES.MODE_CBC, iv)
-    elif mode == 'CFB':
+    elif mode == 'CFB': # supports IV
         cipher = AES.new(key16, AES.MODE_CFB, iv) # Establece el modo de encripcion
-    elif mode == 'OPENPGP':
-        cipher = AES.new(key16, AES.MODE_OPENPGP, iv)
-    elif mode == 'ECB':
-        cipher = AES.new(key16, AES.ECB, iv)
-    elif mode == 'OFB':
-        cipher = AES.new(key16, AES.OFB, iv)
-    elif mode == 'CTR':
-        cipher = AES.new(key16, AES.CTR, iv)
+    elif mode == 'OFB': # supports IV
+        cipher = AES.new(key16, AES.MODE_OFB, iv)
     else: # Si se ingresa un modo inadecuado, lo ejecuta con CBC
         cipher = AES.new(key16, AES.MODE_CBC, iv)
-        
+
     return cipher
 
 def AEScipher(key16, txtToCipher, txtToReturn, mode):
@@ -80,8 +86,23 @@ def main():
 
     striv, iv =  AEScipher(key, txt, enctxt, mode)
     AESdecrypt(key, enctxt, dectxt, iv, mode)
-    bitChainTest(key)
 
-
+    print('\n--COMPARATIVE CHAIN MODE TEST--')
+    print(
+        bitChainTest(key, 'Hola Mundo', 'CBC'),
+        bitChainTest(key, 'Hola Mundo', 'CFB'),
+        bitChainTest(key, 'Hola Mundo', 'OFB')
+        )
+    print(
+        bitChainTest(key, 'Adios Mundo', 'CBC'),
+        bitChainTest(key, 'Adios Mundo', 'CFB'),
+        bitChainTest(key, 'Adios Mundo', 'OFB')
+        )
+    print(
+        bitChainTest(key, 'Ew Mundo', 'CBC'),
+        bitChainTest(key, 'Ew Mundo', 'CFB'),
+        bitChainTest(key, 'Ew Mundo', 'OFB')
+        )
+    
 if __name__ == '__main__':
     main()
