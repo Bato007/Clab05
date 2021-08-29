@@ -31,7 +31,7 @@ def bitChainTest(key16, chain, mode):
     result += 'Decrypted Message --> '+ str(decMssg) + '\n'
 
     return result 
-  
+
 def cipherMode(key16, mode, iv = None): # Allows the use of some modes
 
     if mode == 'CBC': # supports IV
@@ -54,7 +54,7 @@ def AEScipher(key16, txtToCipher, txtToReturn, mode):
             line = bytes(line, 'utf-8')
             ct_bytes = cipher.encrypt(pad(line, AES.block_size))
             ct = b64encode(ct_bytes).decode('utf-8')
-            cipherTxt.write(ct)
+            cipherTxt.write(ct + '\n')
 
     a.close()
     cipherTxt.close()
@@ -67,11 +67,14 @@ def AESdecrypt(key16, cipherTxt, returnTxt, iv, mode):
 
     # Ahora se obtiene el texto
     with open(cipherTxt) as ctxt:
-        line = ctxt.read()
-        ct = b64decode(line)
-        bt = unpad(cipher.decrypt(ct), AES.block_size)
-        pt = bt.decode()
-        decryptedTxt.write(pt)
+        read = ctxt.read()
+        lines = read.split('\n')
+        for line in lines:
+            if line:
+                ct = b64decode(line)
+                bt = unpad(cipher.decrypt(ct), AES.block_size)
+                pt = bt.decode()
+                decryptedTxt.write(pt)
 
     # Escribiendo en el txt y 
     ctxt.close()
